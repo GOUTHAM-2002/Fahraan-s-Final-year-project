@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohammed AI - Chatbot</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #chat-container {
+            width: 100%;
+            max-width: 650px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #header {
+            background-color: #3333cc;
+            color: #ffffff;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        #messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f9f9fc;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+
+        .user {
+            align-self: flex-end;
+            background-color: #d1e7ff;
+            color: #003366;
+        }
+
+        .bot {
+            align-self: flex-start;
+            background-color: #e9ecef;
+            color: #333333;
+        }
+
+        #input-container {
+            display: flex;
+            border-top: 1px solid #ccc;
+            background: #ffffff;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        button {
+            padding: 15px;
+            background: #3333cc;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2222aa;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="header">Mohammed AI - RNSIT Chatbot</div>
+        <div id="messages"></div>
+        <div id="input-container">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            if (!userInput) return;
+
+            const messages = document.getElementById('messages');
+            messages.innerHTML += `<div class="message user">${userInput}</div>`;
+            messages.scrollTop = messages.scrollHeight;
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_input: userInput }),
+                });
+
+                const data = await response.json();
+                const botResponse = data.response || "Sorry, something went wrong!";
+                messages.innerHTML += `<div class="message bot">${botResponse}</div>`;
+                messages.scrollTop = messages.scrollHeight;
+            } catch (err) {
+                messages.innerHTML += `<div class="message bot">Error connecting to the server!</div>`;
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            document.getElementById('user-input').value = '';
+        }
+    </script>
+</body>
+</html>
